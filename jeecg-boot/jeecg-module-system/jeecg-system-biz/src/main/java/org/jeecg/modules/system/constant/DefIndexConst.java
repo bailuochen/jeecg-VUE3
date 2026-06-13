@@ -29,7 +29,7 @@ public interface DefIndexConst {
      * 默认首页的初始值
      */
     String DEF_INDEX_NAME = "首页";
-    String DEF_INDEX_URL = "/dashboard/analysis";
-    String DEF_INDEX_COMPONENT = "dashboard/Analysis";
+    String DEF_INDEX_URL = "/vue-admin/dashboard";
+    String DEF_INDEX_COMPONENT = "LayoutsContent";
 
 }
