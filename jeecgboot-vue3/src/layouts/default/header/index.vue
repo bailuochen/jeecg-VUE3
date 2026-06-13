@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <Header :class="getHeaderClass">
     <!-- left start -->
     <div :class="`${prefixCls}-left`">
@@ -38,8 +38,6 @@
       <UserDropDown :theme="getHeaderTheme" />
 
       <SettingDrawer v-if="getShowSetting" :class="`${prefixCls}-action__item`" />
-      <!-- ai助手 -->
-      <Aide v-if="getAiIconShow"></Aide>
     </div>
   </Header>
   <LoginSelect ref="loginSelectRef" @success="loginSelectOk"></LoginSelect>
@@ -74,7 +72,6 @@
   import LoginSelect from '/@/views/sys/login/LoginSelect.vue';
   import { useUserStore } from '/@/store/modules/user';
   import { useI18n } from '/@/hooks/web/useI18n';
-  import Aide from "@/views/dashboard/ai/components/aide/index.vue"
   const { t } = useI18n();
 
   export default defineComponent({
@@ -96,7 +93,6 @@
       SettingDrawer: createAsyncComponent(() => import('/@/layouts/default/setting/index.vue'), {
         loading: true,
       }),
-      Aide
     },
     props: {
       fixed: propTypes.bool,
@@ -105,7 +101,7 @@
       const { prefixCls } = useDesign('layout-header');
       const userStore = useUserStore();
       const { getShowTopMenu, getShowHeaderTrigger, getSplit, getIsMixMode, getMenuWidth, getIsMixSidebar } = useMenuSetting();
-      const { getUseErrorHandle, getShowSettingButton, getSettingButtonPosition, getAiIconShow } = useRootSetting();
+      const { getUseErrorHandle, getShowSettingButton, getSettingButtonPosition } = useRootSetting();
       const { title, isQiankunMicro } = useGlobSetting();
 
       const {
@@ -215,8 +211,7 @@
         loginSelectOk,
         loginSelectRef,
         title,
-        t,
-        getAiIconShow
+        t
       };
     },
   });
@@ -256,3 +251,4 @@
     }
   }
 </style>
+

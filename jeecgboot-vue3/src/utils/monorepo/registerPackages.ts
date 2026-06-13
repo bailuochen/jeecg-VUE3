@@ -2,10 +2,13 @@ import type { App } from 'vue';
 import { warn } from '/@/utils/log';
 import { registerDynamicRouter } from '/@/utils/monorepo/dynamicRouter';
 
+interface LazyPackageConfig {
+  name: string;
+  importer: () => Promise<any>;
+}
+
 // 懒加载模块配置（按需加载，访问相关路由时才加载对应包）
-const lazyPackages = [
-  { name: '@jeecg/aiflow', importer: () => import('@jeecg/aiflow') },
-];
+const lazyPackages: LazyPackageConfig[] = [];
 
 let appInstance: App | null = null;
 
@@ -35,7 +38,7 @@ const loadingPromises = new Map<string, Promise<any>>();
 /**
  * 按需加载包并注册
  */
-async function ensurePackageLoaded(pkgConfig: typeof lazyPackages[number]) {
+async function ensurePackageLoaded(pkgConfig: LazyPackageConfig) {
   const { name, importer } = pkgConfig;
   if (loadedPackages.has(name)) {
     return loadedPackages.get(name);
@@ -59,10 +62,10 @@ async function ensurePackageLoaded(pkgConfig: typeof lazyPackages[number]) {
 /**
  * 根据 component 路径关键字匹配优先加载的包
  */
-function getMatchedPackage(component: string): typeof lazyPackages[number] | null {
+function getMatchedPackage(component: string): LazyPackageConfig | null {
   const lc = component.toLowerCase();
   for (const pkgConfig of lazyPackages) {
-    // 从包名中提取关键字，如 @jeecg/online -> online, @jeecg/aiflow -> aiflow
+    // 从包名中提取关键字，如 @jeecg/online -> online
     const keyword = pkgConfig.name.split('/').pop()!;
     if (lc.includes(keyword)) {
       return pkgConfig;
@@ -74,7 +77,7 @@ function getMatchedPackage(component: string): typeof lazyPackages[number] | nul
 /**
  * 从指定包中查找组件
  */
-async function findComponentInPackage(pkgConfig: typeof lazyPackages[number], component: string): Promise<(() => Promise<Recordable>) | null> {
+async function findComponentInPackage(pkgConfig: LazyPackageConfig, component: string): Promise<(() => Promise<Recordable>) | null> {
   try {
     const mod = await ensurePackageLoaded(pkgConfig);
     const views = mod.getViews();

@@ -24,6 +24,61 @@ import { getBackMenuAndPerms } from '/@/api/sys/menu';
 import { useMessage } from '/@/hooks/web/useMessage';
 import { PageEnum } from '/@/enums/pageEnum';
 
+const disabledModuleMatchers = [
+  '/ai',
+  '/super/airag',
+  'super/airag',
+  '/airag',
+  'aiflow',
+  'aiapp',
+  'aimodel',
+  'aiknowledge',
+  'aiprompts',
+  'aimcp',
+  'aiposter',
+  'aiwriter',
+  'aivoice',
+  'aivideo',
+  'ocr',
+  '智能体',
+  '知识库',
+  '模型',
+];
+
+function routeIncludesDisabledModule(route: AppRouteRecordRaw): boolean {
+  const meta = route.meta || {};
+  const searchable = [
+    route.path,
+    route.name,
+    route.component,
+    route.redirect,
+    (route as Recordable).url,
+    meta.title,
+    meta.icon,
+    (meta as Recordable).url,
+  ]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase();
+
+  return disabledModuleMatchers.some((keyword) => searchable.includes(keyword.toLowerCase()));
+}
+
+function filterDisabledModules(routes: AppRouteRecordRaw[]): AppRouteRecordRaw[] {
+  return routes
+    .filter((route) => !routeIncludesDisabledModule(route))
+    .map((route) => {
+      if (!route.children?.length) {
+        return route;
+      }
+      return {
+        ...route,
+        children: filterDisabledModules(route.children as AppRouteRecordRaw[]),
+      };
+    })
+    .filter((route) => !route.children || route.children.length > 0 || route.component);
+}
+
 // 系统权限
 interface AuthItem {
   // 菜单权限编码，例如：“sys:schedule:list,sys:schedule:info”,多个逗号隔开
@@ -222,6 +277,7 @@ export const usePermissionStore = defineStore({
           let routeList: AppRouteRecordRaw[] = [];
           try {
             routeList = await this.changePermissionCode();
+            routeList = filterDisabledModules(routeList);
             //routeList = (await getMenuList()) as AppRouteRecordRaw[];
             // let hasIndex: boolean = false;
             // let hasIcon: boolean = false;

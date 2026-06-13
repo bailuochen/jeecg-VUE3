@@ -156,7 +156,6 @@ export default async ({ command, mode }: ConfigEnv): Promise<UserConfig> => {
         '@iconify/iconify',
         'ant-design-vue/es/locale/zh_CN',
         'ant-design-vue/es/locale/en_US',
-        // update-begin--author:scott---date:20260427---for: 集成 @jeecg/aiflow（预编译 lib 在 node_modules）时，
         // Vite 默认不扫描 node_modules 里已打包的 mjs，导致 ant-design-vue/es/vc-picker/generate/dayjs.js
         // 引入的 dayjs 插件子路径（UMD/CJS）未被预打包，运行时报 "does not provide an export named 'default'"。
         // 显式列出 vc-picker 用到的全部 dayjs 插件，强制 esbuild 预打包成 ESM。
@@ -167,12 +166,8 @@ export default async ({ command, mode }: ConfigEnv): Promise<UserConfig> => {
         'dayjs/plugin/weekOfYear',
         'dayjs/plugin/weekYear',
         'dayjs/plugin/quarterOfYear',
-        // update-end--author:scott---date:20260427---for: 集成 @jeecg/aiflow 时 dayjs 插件 default 导出报错
       ],
-      exclude: [
-        //升级vite4后，需要排除online和aiflow依赖
-        '@jeecg/aiflow',
-      ],
+      exclude: [],
     },
   };
 };
