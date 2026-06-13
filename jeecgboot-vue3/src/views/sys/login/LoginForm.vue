@@ -1,6 +1,9 @@
 <template>
-  <LoginFormTitle v-show="getShow" class="enter-x" />
-  <Form class="p-4 enter-x" :model="formData" :rules="getFormRules" ref="formRef" v-show="getShow" @keypress.enter="handleLogin">
+  <div class="login-card-title enter-x" v-show="getShow">
+    <h2>{{ t('sys.login.signInFormTitle') }}</h2>
+    <p>请输入账号、密码和验证码进入平台</p>
+  </div>
+  <Form class="login-account-form enter-x" :model="formData" :rules="getFormRules" ref="formRef" v-show="getShow" @keypress.enter="handleLogin">
     <FormItem name="account" class="enter-x">
       <Input size="large" v-model:value="formData.account" :placeholder="t('sys.login.userName')" class="fix-auto-fill" />
     </FormItem>
@@ -8,97 +11,41 @@
       <InputPassword size="large" visibilityToggle v-model:value="formData.password" :placeholder="t('sys.login.password')" />
     </FormItem>
 
-    <!--验证码-->
-    <ARow class="enter-x">
-      <ACol :span="12">
+    <ARow class="login-captcha-row enter-x" :gutter="12">
+      <ACol :span="15">
         <FormItem name="inputCode" class="enter-x">
-          <Input size="large" v-model:value="formData.inputCode" :placeholder="t('sys.login.inputCode')" style="min-width: 100px" />
+          <Input size="large" v-model:value="formData.inputCode" :placeholder="t('sys.login.inputCode')" />
         </FormItem>
       </ACol>
-      <ACol :span="8">
-        <FormItem :style="{ 'text-align': 'right', 'margin-left': '20px' }" class="enter-x">
+      <ACol :span="9">
+        <FormItem class="enter-x">
           <img
             v-if="randCodeData.requestCodeSuccess"
-            style="margin-top: 2px; max-width: initial"
+            class="login-captcha-img"
             :src="randCodeData.randCodeImage"
             @click="handleChangeCheckCode"
           />
-          <img v-else style="margin-top: 2px; max-width: initial" src="../../../assets/images/checkcode.png" @click="handleChangeCheckCode" />
-        </FormItem>
-      </ACol>
-    </ARow>
-
-    <ARow class="enter-x">
-      <ACol :span="12">
-        <FormItem>
-          <!-- No logic, you need to deal with it yourself -->
-          <Checkbox v-model:checked="rememberMe" size="small">
-            {{ t('sys.login.rememberMe') }}
-          </Checkbox>
-        </FormItem>
-      </ACol>
-      <ACol :span="12">
-        <FormItem :style="{ 'text-align': 'right' }">
-          <!-- No logic, you need to deal with it yourself -->
-          <Button type="link" size="small" @click="setLoginState(LoginStateEnum.RESET_PASSWORD)">
-            {{ t('sys.login.forgetPassword') }}
-          </Button>
+          <img v-else class="login-captcha-img" src="../../../assets/images/checkcode.png" @click="handleChangeCheckCode" />
         </FormItem>
       </ACol>
     </ARow>
 
     <FormItem class="enter-x">
-      <Button type="primary" size="large" block @click="handleLogin" :loading="loading">
+      <Button class="login-submit-btn" type="primary" size="large" block @click="handleLogin" :loading="loading">
         {{ t('sys.login.loginButton') }}
       </Button>
-      <!-- <Button size="large" class="mt-4 enter-x" block @click="handleRegister">
-              {{ t('sys.login.registerButton') }}
-            </Button> -->
     </FormItem>
-    <ARow class="enter-x">
-      <ACol :md="8" :xs="24">
-        <Button block @click="setLoginState(LoginStateEnum.MOBILE)">
-          {{ t('sys.login.mobileSignInFormTitle') }}
-        </Button>
-      </ACol>
-      <ACol :md="8" :xs="24" class="!my-2 !md:my-0 xs:mx-0 md:mx-2">
-        <Button block @click="setLoginState(LoginStateEnum.QR_CODE)">
-          {{ t('sys.login.qrSignInFormTitle') }}
-        </Button>
-      </ACol>
-      <ACol :md="7" :xs="24">
-        <Button block @click="setLoginState(LoginStateEnum.REGISTER)">
-          {{ t('sys.login.registerButton') }}
-        </Button>
-      </ACol>
-    </ARow>
-
-    <Divider class="enter-x">{{ t('sys.login.otherSignIn') }}</Divider>
-
-    <div class="flex justify-evenly enter-x" :class="`${prefixCls}-sign-in-way`">
-      <a @click="onThirdLogin('github')" title="github"><GithubFilled /></a>
-      <a @click="onThirdLogin('wechat_enterprise')" title="企业微信"> <icon-font class="item-icon" type="icon-qiyeweixin3" /></a>
-      <a @click="onThirdLogin('dingtalk')" title="钉钉"><DingtalkCircleFilled /></a>
-      <a @click="onThirdLogin('wechat_open')" title="微信"><WechatFilled /></a>
-    </div>
   </Form>
-  <!-- 第三方登录相关弹框 -->
-  <ThirdModal ref="thirdModalRef"></ThirdModal>
 </template>
 <script lang="ts" setup>
   import { reactive, ref, toRaw, unref, computed, onMounted } from 'vue';
 
-  import { Checkbox, Form, Input, Row, Col, Button, Divider } from 'ant-design-vue';
-  import { GithubFilled, WechatFilled, DingtalkCircleFilled } from '@ant-design/icons-vue';
-  import { IconFont } from '/@/utils/iconfont2';
-  import LoginFormTitle from './LoginFormTitle.vue';
-  import ThirdModal from './ThirdModal.vue';
+  import { Form, Input, Row, Col, Button } from 'ant-design-vue';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useMessage } from '/@/hooks/web/useMessage';
 
   import { useUserStore } from '/@/store/modules/user';
-  import { LoginStateEnum, useLoginState, useFormRules, useFormValid } from './useLogin';
-  import { useDesign } from '/@/hooks/web/useDesign';
+  import { useLoginState, useFormRules, useFormValid } from './useLogin';
   import { getCodeInfo } from '/@/api/sys/user';
   import {  encryptAESCBC } from '/@/utils/cipher';
 
@@ -107,17 +54,14 @@
   const FormItem = Form.Item;
   const InputPassword = Input.Password;
   const { t } = useI18n();
-  const { notification, createErrorModal } = useMessage();
-  const { prefixCls } = useDesign('login');
+  const { notification } = useMessage();
   const userStore = useUserStore();
 
-  const { setLoginState, getLoginState } = useLoginState();
+  const { getLoginState } = useLoginState();
   const { getFormRules } = useFormRules();
 
   const formRef = ref();
-  const thirdModalRef = ref();
   const loading = ref(false);
-  const rememberMe = ref(false);
 
   const formData = reactive({
     account: 'admin',
@@ -180,15 +124,58 @@
     });
   }
 
-  /**
-   * 第三方登录
-   * @param type
-   */
-  function onThirdLogin(type) {
-    thirdModalRef.value.onThirdLogin(type);
-  }
   //初始化验证码
   onMounted(() => {
     handleChangeCheckCode();
   });
 </script>
+<style lang="less" scoped>
+  .login-card-title {
+    margin-bottom: 28px;
+
+    h2 {
+      margin-bottom: 8px;
+      color: #0f172a;
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1.25;
+    }
+
+    p {
+      margin: 0;
+      color: #64748b;
+      font-size: 14px;
+    }
+  }
+
+  .login-account-form {
+    :deep(.ant-input),
+    :deep(.ant-input-password) {
+      height: 44px;
+      border-radius: 6px;
+    }
+
+    :deep(.ant-form-item) {
+      margin-bottom: 20px;
+    }
+  }
+
+  .login-captcha-row {
+    align-items: flex-start;
+  }
+
+  .login-captcha-img {
+    width: 100%;
+    height: 44px;
+    object-fit: cover;
+    border: 1px solid #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .login-submit-btn {
+    height: 44px;
+    border-radius: 6px;
+    font-weight: 600;
+  }
+</style>

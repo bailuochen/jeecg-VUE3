@@ -1,36 +1,37 @@
 <template>
-  <div :class="prefixCls" class="relative w-full h-full px-4">
-    <AppLocalePicker class="absolute text-white top-4 right-4 enter-x xl:text-gray-600" :showText="false" v-if="!sessionTimeout && showLocale" />
-    <AppDarkModeToggle class="absolute top-3 right-7 enter-x" v-if="!sessionTimeout" />
-    <span class="-enter-x xl:hidden">
-      <AppLogo :alwaysShowTitle="true" />
-    </span>
+  <div :class="prefixCls">
+    <div class="login-tools" v-if="!sessionTimeout">
+      <AppLocalePicker :showText="false" v-if="showLocale" />
+      <AppDarkModeToggle />
+    </div>
 
-    <div class="container relative h-full py-2 mx-auto sm:px-10">
-      <div class="flex h-full">
-        <div class="hidden min-h-full pl-4 mr-4 xl:flex xl:flex-col xl:w-6/12">
-          <AppLogo class="-enter-x" />
-          <div class="my-auto">
-            <img :alt="title" src="../../../assets/svg/login-box-bg.svg" class="w-1/2 -mt-16 -enter-x" />
-            <div class="mt-10 font-medium text-white -enter-x">
-              <span class="inline-block mt-4 text-3xl"> {{ t('sys.login.signInTitle') }}</span>
-            </div>
-            <div class="mt-5 font-normal text-white text-md dark:text-gray-500 -enter-x">
-              {{ t('sys.login.signInDesc') }}
-            </div>
+    <div class="login-shell">
+      <section class="login-brand-panel">
+        <AppLogo class="login-logo" :alwaysShowTitle="true" />
+        <div class="login-copy">
+          <p class="login-kicker">Micro Frontend Console</p>
+          <h1>{{ title }}</h1>
+          <p>{{ t('sys.login.signInDesc') }}</p>
+        </div>
+        <div class="login-metrics">
+          <div>
+            <strong>Qiankun</strong>
+            <span>统一入口</span>
+          </div>
+          <div>
+            <strong>RBAC</strong>
+            <span>权限菜单</span>
+          </div>
+          <div>
+            <strong>Vue 3</strong>
+            <span>主应用壳</span>
           </div>
         </div>
-        <div class="flex w-full h-full py-5 xl:h-auto xl:py-0 xl:my-0 xl:w-6/12">
-          <div
-            :class="`${prefixCls}-form`"
-            class="relative w-full px-5 py-8 mx-auto my-auto rounded-md shadow-md xl:ml-16 xl:bg-transparent sm:px-8 xl:p-4 xl:shadow-none sm:w-3/4 lg:w-2/4 xl:w-auto enter-x"
-          >
-            <LoginForm />
-            <ForgetPasswordForm />
-            <RegisterForm />
-            <MobileForm />
-            <QrCodeForm />
-          </div>
+      </section>
+
+      <div class="login-form-panel">
+        <div :class="`${prefixCls}-form`">
+          <LoginForm />
         </div>
       </div>
     </div>
@@ -41,15 +42,11 @@
   import { AppLogo } from '/@/components/Application';
   import { AppLocalePicker, AppDarkModeToggle } from '/@/components/Application';
   import LoginForm from './LoginForm.vue';
-  import ForgetPasswordForm from './ForgetPasswordForm.vue';
-  import RegisterForm from './RegisterForm.vue';
-  import MobileForm from './MobileForm.vue';
-  import QrCodeForm from './QrCodeForm.vue';
   import { useGlobSetting } from '/@/hooks/setting';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useDesign } from '/@/hooks/web/useDesign';
   import { useLocaleStore } from '/@/store/modules/locale';
-  import { useLoginState, LoginStateEnum } from './useLogin';
+  import { useLoginState } from './useLogin';
   defineProps({
     sessionTimeout: {
       type: Boolean,
@@ -69,15 +66,11 @@
   @prefix-cls: ~'@{namespace}-login';
   @logo-prefix-cls: ~'@{namespace}-app-logo';
   @countdown-prefix-cls: ~'@{namespace}-countdown-input';
-  @dark-bg: #293146;
+  @dark-bg: #111827;
 
   html[data-theme='dark'] {
     .@{prefix-cls} {
       background-color: @dark-bg;
-
-      &::before {
-        background-image: url(/@/assets/svg/login-bg-dark.svg);
-      }
 
       .ant-input,
       .ant-input-password {
@@ -105,104 +98,163 @@
   }
 
   .@{prefix-cls} {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     min-height: 100%;
     overflow: hidden;
-    @media (max-width: @screen-xl) {
-      background-color: #293146;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(22, 119, 255, 0.16), transparent 28%),
+      radial-gradient(circle at 78% 18%, rgba(0, 168, 112, 0.14), transparent 26%),
+      linear-gradient(135deg, #f7fbff 0%, #eef4f8 48%, #f8fafc 100%);
 
-      .@{prefix-cls}-form {
-        background-color: #fff;
-      }
+    .login-tools {
+      position: fixed;
+      top: 20px;
+      right: 24px;
+      z-index: 2;
+      display: flex;
+      gap: 12px;
+      align-items: center;
     }
 
-    &::before {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      margin-left: -48%;
-      background-image: url(/@/assets/svg/login-bg.svg);
-      background-position: 100%;
-      background-repeat: no-repeat;
-      background-size: auto 100%;
-      content: '';
-      @media (max-width: @screen-xl) {
-        display: none;
-      }
+    .login-shell {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(420px, 0.95fr);
+      width: min(1120px, calc(100vw - 48px));
+      min-height: 640px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.82);
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      border-radius: 8px;
+      box-shadow: 0 24px 80px rgba(15, 23, 42, 0.14);
+      backdrop-filter: blur(16px);
     }
 
-    .@{logo-prefix-cls} {
-      position: absolute;
-      top: 12px;
-      height: 30px;
+    .login-brand-panel {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 44px;
+      color: #fff;
+      background:
+        linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(22, 119, 255, 0.8)),
+        linear-gradient(45deg, #0f172a, #1677ff);
+    }
 
-      &__title {
-        font-size: 16px;
+    .login-logo {
+      position: static;
+      height: 40px;
+
+      .@{logo-prefix-cls}__title {
         color: #fff;
       }
+    }
 
-      img {
-        width: 32px;
+    .login-copy {
+      max-width: 500px;
+
+      .login-kicker {
+        margin-bottom: 18px;
+        color: rgba(255, 255, 255, 0.68);
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin-bottom: 18px;
+        color: #fff;
+        font-size: 42px;
+        font-weight: 700;
+        line-height: 1.15;
+      }
+
+      p {
+        color: rgba(255, 255, 255, 0.78);
+        font-size: 16px;
+        line-height: 1.8;
       }
     }
 
-    .container {
-      .@{logo-prefix-cls} {
-        display: flex;
-        width: 60%;
-        height: 80px;
+    .login-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
 
-        &__title {
-          font-size: 24px;
-          color: #fff;
-        }
+      div {
+        padding: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.08);
+      }
 
-        img {
-          width: 48px;
-        }
+      strong,
+      span {
+        display: block;
+      }
+
+      strong {
+        margin-bottom: 8px;
+        color: #fff;
+        font-size: 17px;
+      }
+
+      span {
+        color: rgba(255, 255, 255, 0.66);
       }
     }
 
-    &-sign-in-way {
-      .anticon {
-        font-size: 22px;
-        color: #888;
-        cursor: pointer;
+    .login-form-panel {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 48px;
+    }
 
-        &:hover {
-          color: @primary-color;
-        }
-      }
+    &-form {
+      width: 100%;
+      max-width: 390px;
     }
 
     input:not([type='checkbox']) {
-      min-width: 360px;
+      min-width: 0;
+    }
 
-      @media (max-width: @screen-xl) {
-        min-width: 320px;
+    @media (max-width: @screen-lg) {
+      padding: 24px;
+
+      .login-shell {
+        grid-template-columns: 1fr;
+        min-height: auto;
       }
 
-      @media (max-width: @screen-lg) {
-        min-width: 260px;
-      }
-
-      @media (max-width: @screen-md) {
-        min-width: 240px;
-      }
-
-      @media (max-width: @screen-sm) {
-        min-width: 160px;
+      .login-brand-panel {
+        gap: 40px;
+        padding: 32px;
       }
     }
 
-    .@{countdown-prefix-cls} input {
-      min-width: unset;
-    }
+    @media (max-width: @screen-sm) {
+      padding: 12px;
 
-    .ant-divider-inner-text {
-      font-size: 12px;
-      color: @text-color-secondary;
+      .login-shell {
+        width: 100%;
+      }
+
+      .login-brand-panel,
+      .login-form-panel {
+        padding: 24px;
+      }
+
+      .login-copy h1 {
+        font-size: 30px;
+      }
+
+      .login-metrics {
+        grid-template-columns: 1fr;
+      }
     }
   }
 </style>
