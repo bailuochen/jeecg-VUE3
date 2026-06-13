@@ -155,6 +155,21 @@
       border-radius: 6px;
     }
 
+    :deep(.ant-input-password) {
+      align-items: center;
+    }
+
+    :deep(.ant-input-password .ant-input) {
+      height: auto;
+      padding: 0;
+      line-height: 1.5;
+    }
+
+    :deep(.ant-input-password .ant-input-suffix) {
+      display: flex;
+      align-items: center;
+    }
+
     :deep(.ant-form-item) {
       margin-bottom: 20px;
     }

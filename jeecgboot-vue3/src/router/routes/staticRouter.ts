@@ -12,6 +12,16 @@ export const staticRoutesList: AppRouteRecordRaw[] = [
       hideMenu: true,
       title: 'Dashboard',
     },
-    children: [],
+    children: [
+      {
+        path: 'workbench',
+        name: 'WorkbenchStatic',
+        component: () => import('/@/views/dashboard/workbench/index.vue'),
+        meta: {
+          hideMenu: true,
+          title: 'Workbench',
+        },
+      },
+    ],
   },
 ];

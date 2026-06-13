@@ -1,10 +1,10 @@
 <template>
-  <PageWrapper title="主应用控制台" content="统一负责登录、权限、菜单与 qiankun 子应用入口。">
+  <PageWrapper title="首页工作台" content="统一负责登录、权限、菜单与 qiankun 子应用入口。">
     <div class="workbench-shell">
       <section class="hero-panel">
         <div>
           <p class="hero-kicker">Application Shell</p>
-          <h2>自主开发平台</h2>
+          <h2>自主开发平台工作台</h2>
           <p class="hero-desc">主应用保持轻量，只承载基础权限体系、菜单管理和子应用挂载能力。</p>
         </div>
         <a-space wrap>
