@@ -28,6 +28,19 @@ UPDATE sys_permission
 SET del_flag = 0,
     hidden = 0,
     status = '1',
+    redirect = CASE
+      WHEN url = '/dashboard' THEN '/dashboard/workbench'
+      ELSE redirect
+    END,
     update_time = NOW(),
     update_by = 'deploy'
 WHERE url IN ('/dashboard', '/dashboard/workbench');
+
+DELETE rp
+FROM sys_role_permission rp
+JOIN sys_permission p ON p.id = rp.permission_id
+WHERE p.url = '/dashboard/analysis'
+   OR p.url LIKE '/dataVisual%'
+   OR p.url LIKE '/airag%'
+   OR p.url LIKE '/online%'
+   OR p.url LIKE '/report%';
