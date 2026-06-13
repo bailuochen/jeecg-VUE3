@@ -376,26 +376,6 @@ export function importViewsFile(path): Promise<any> {
   });
 }
 
-
-/**
- * 跳转至积木报表的 预览页面
- * @param url
- * @param id
- * @param token
- */
-export function goJmReportViewPage(url, id, token) {
-  // URL支持{{ window.xxx }}占位符变量
-  url = url.replace(/{{([^}]+)?}}/g, (_s1, s2) => _eval(s2))
-  if (url.includes('?')) {
-    url += '&'
-  } else {
-    url += '?'
-  }
-  url += `id=${id}`
-  url += `&token=${token}`
-  window.open(url)
-}
-
 /**
  * 获取随机颜色
  */
@@ -835,5 +815,4 @@ img{max-width:100%!important;height:auto!important;display:block!important;}
     return html;
   }
 };
-
 

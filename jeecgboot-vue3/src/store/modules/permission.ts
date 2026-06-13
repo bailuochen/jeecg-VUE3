@@ -54,6 +54,19 @@ const disabledModuleMatchers = [
   '智能体',
   '知识库',
   '模型',
+  '/report',
+  'views/report',
+  'dashboard/analysis',
+  'chartdemo',
+  'statisticst',
+  'statistics',
+  'jmreport',
+  '积木报表',
+  '统计报表',
+  '统计',
+  '报表',
+  '图表',
+  '大屏',
 ];
 
 function routeIncludesDisabledModule(route: AppRouteRecordRaw): boolean {
