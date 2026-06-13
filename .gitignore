@@ -1,0 +1,23 @@
+## ide
+**/.idea
+*.iml
+rebel.xml
+
+## backend
+**/target
+**/logs
+
+## front
+**/node_modules
+**/.vite
+jeecgboot-vue3/dist
+jeecg-app-1/dist
+vue-admin/dist
+**/*.lock
+os_del.cmd
+os_del_doc.cmd
+.svn
+derby.log
+.cursor
+.history
+.claude
