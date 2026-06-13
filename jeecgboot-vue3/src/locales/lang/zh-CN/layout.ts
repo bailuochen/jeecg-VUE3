@@ -1,5 +1,5 @@
 export default {
-  footer: { onlinePreview: 'JEECG首页', onlineDocument: '在线文档' },
+  footer: { onlinePreview: '平台首页', onlineDocument: '在线文档' },
   header: {
     // user dropdown
     dropdownItemDoc: '官网',

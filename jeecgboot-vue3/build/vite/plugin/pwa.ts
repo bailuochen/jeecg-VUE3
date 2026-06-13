@@ -16,8 +16,8 @@ export function configPwaPlugin(isBuild: boolean): PluginOption | PluginOption[]
     injectRegister: 'inline', // 将 Service Worker 注册代码内联到 HTML 中，避免缓存问题
     includeAssets: ['favicon.ico', 'logo.png'],
     manifest: {
-      name: 'JeecgBoot',
-      short_name: 'Jeecg',
+      name: '自主开发平台',
+      short_name: '自主平台',
       theme_color: '#ffffff',
       icons: [
         {
@@ -109,7 +109,7 @@ export function configPwaPlugin(isBuild: boolean): PluginOption | PluginOption[]
             },
           },
         },
-        // API 请求（JeecgBoot 实际前缀是 /jeecgboot/，原 /api/ 规则未生效）
+        // API 请求（保留后端实际接口前缀 /jeecgboot/，原 /api/ 规则未生效）
         {
           urlPattern: /\/jeecgboot\/.*/i,
           handler: 'NetworkOnly',
@@ -127,4 +127,3 @@ export function configPwaPlugin(isBuild: boolean): PluginOption | PluginOption[]
 
   return VitePWA(pwaOptions);
 }
-

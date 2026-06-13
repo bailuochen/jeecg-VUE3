@@ -1,10 +1,6 @@
-<!--
- * @Author: Jeecg
- * @Description: logo component
--->
 <template>
   <div class="anticon" :class="getAppLogoClass" @click="goHome">
-    <img src="../../../assets/images/logo.png" />
+    <span class="app-logo-mark">自</span>
     <div class="ml-2 truncate md:opacity-100" :class="getTitleClass" v-show="showTitle">
       {{ shortTitle }}
     </div>
@@ -88,6 +84,21 @@
       font-weight: 600;
       transition: all 0.5s;
       line-height: normal;
+    }
+
+    .app-logo-mark {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #1677ff, #00a870);
+      box-shadow: 0 6px 16px rgba(22, 119, 255, 0.22);
+      flex-shrink: 0;
     }
   }
 </style>
