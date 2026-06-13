@@ -7,8 +7,6 @@ import { warn } from '/@/utils/log';
 import { createRouter, createWebHashHistory } from 'vue-router';
 import { getTenantId, getToken } from "/@/utils/auth";
 import { URL_HASH_TAB, _eval } from '/@/utils';
-//引入online lib路由
-import { packageViews } from '/@/utils/monorepo/dynamicRouter';
 import { dynamicPages } from '/@/utils/dynamicPages';
 import {useI18n} from "/@/hooks/web/useI18n";
 
@@ -31,8 +29,6 @@ function asyncImportRoute(routes: AppRouteRecordRaw[] | undefined) {
     // update-begin--author:liaozhiyang---date:20260302---for:【QQYUN-14799】动态引入页面会生成两份及引入components下的组件文件
     dynamicViewsModules = dynamicPages as Record<string, () => Promise<Recordable>>;
     // update-end--author:liaozhiyang---date:20260302---for:【QQYUN-14799】动态引入页面会生成两份及引入components下的组件文件
-    //合并online lib路由
-    dynamicViewsModules = Object.assign({}, dynamicViewsModules, packageViews);
   }
   if (!routes) return;
   routes.forEach((item) => {
@@ -108,7 +104,7 @@ function dynamicImport(dynamicViewsModules: Record<string, () => Promise<Recorda
   const keys = Object.keys(dynamicViewsModules);
   const matchKeys = keys.filter((key) => {
     // update-begin--author:liaozhiyang---date:20260302---for:【QQYUN-14799】动态引入页面会生成两份及引入components下的组件文件
-    // 兼容两种前缀：dynamicPages 的 ../views 与 packageViews 的 ../../views
+    // 兼容 dynamicPages 的 ../views 前缀
     const k = key.replace(/^(\.\.\/)+views/, '');
     // update-end--author:liaozhiyang---date:20260302---for:【QQYUN-14799】动态引入页面会生成两份及引入components下的组件文件
     const startFlag = component.startsWith('/');

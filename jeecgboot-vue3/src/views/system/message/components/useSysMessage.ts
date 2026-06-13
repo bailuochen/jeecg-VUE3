@@ -194,13 +194,8 @@ export function useSysMessage(setLocaleText) {
 /**
  * 用于消息跳转
  */
-export function useMessageHref(emit, props){
-  //const [registerHistoryModal, { openModal: openHistoryModal }] = useModal();
-  //const [registerTaskModal, { openModal: openTaskModal }] = useModal();
-  // 注册表单弹窗
-  //const [registerDesignFormModal, { openModal: openDesignFormModal }] = useModal();
+export function useMessageHref(emit, props) {
   let messageHrefArray: any[] = getDictItemsByCode('messageHref');
-  // 代码逻辑说明: 【JHHB-133】消息列表打开协同工作
   messageHrefArray = [
     ...messageHrefArray,
     { value: 'eoa_co_remind', text: '/collaboration/pending', url: '/collaboration/launch' },
@@ -213,75 +208,39 @@ export function useMessageHref(emit, props){
   const rt = useRoute();
   const { close: closeTab, closeSameRoute } = useTabs();
 
-  //*********************************[QQYUN-6713]系统通知打开弹窗修改，动态设置弹窗begin******************************************
-  //当前表单弹窗
   const currentModal = ref<string | null>(null);
-  //当前表单参数
   const modalParams = ref<Recordable>({});
-  //表单注册缓存
   const modalRegCache = ref<Recordable>({});
-  //组件绑定参数
   const bindParams = ref<Recordable>({});
 
-  /**
-   * 根据类型打开不同弹窗
-   * @param type
-   * @param params
-   */
   async function handleOpenType(type, params) {
     currentModal.value = null;
     modalParams.value = { ...params };
     switch (type) {
       case 'task':
-        //流程办理
         bindParams.value = { actionType: 'todo' };
         currentModal.value = 'ProcessTaskHandleModal';
         break;
       case 'history':
         bindParams.value = {};
-        //历史流程
         currentModal.value = 'MyTaskHandleModal';
-        break;
-      case 'design':
-        //表单设计
-        currentModal.value = 'DesformViewModal';
-        bindParams.value = {
-          showRecordCopy: false,
-          showRecordShare: false,
-          showRecordSysPrint: false,
-          showDesignFormBtn: false,
-        };
-        break;
-      case 'cgform':
-        //Online表单
-        currentModal.value = 'OnlineAutoModal';
-        bindParams.value = {
-          id: params.formId,
-        }
         break;
       default:
         currentModal.value = null;
         break;
     }
-    //注册表单弹窗
     initModalRegister();
     await nextTick(() => {
       if (modalRegCache.value[currentModal.value!]?.isRegister) {
-        console.log('已注冊，走缓存');
         modalRegCache.value[currentModal.value!].modalMethods.openModal(true, modalParams.value);
       }
     });
   }
 
-  /**
-   * 初始化弹窗注册
-   */
   function initModalRegister() {
-    //如果当前选择表单为null，就不处理
     if (!currentModal.value) {
       return;
     }
-    //判断缓存中是否存在，不存在就走缓存逻辑
     if (!modalRegCache.value[currentModal.value]) {
       const [registerModal, modalMethods] = useModal();
       modalRegCache.value[currentModal.value] = {
@@ -292,170 +251,42 @@ export function useMessageHref(emit, props){
     }
   }
 
-  /**
-   * 绑定注册弹窗
-   * @param regFn
-   * @param modalMethod
-   */
   function bindRegisterModal(regFn, modalMethod) {
     return async (...args) => {
-      console.log('开始注册：', currentModal.value);
       await regFn(...args);
-      console.log('注册完成：', currentModal.value);
-      //打开弹窗
       modalMethod.openModal(true, modalParams.value);
-      //设置缓存标识
       modalRegCache.value[currentModal.value!].isRegister = true;
     };
   }
-  //*************************************[QQYUN-6713]系统通知打开弹窗修改，动态设置弹窗end*********************************************
-  // const defaultPath = '/monitor/mynews';
-  //const bpmPath = '/task/handle/'
 
-  async function goPage(record, openModalFun?){
-    if(!record.busType || record.busType == 'msg_node'){
-      if(!openModalFun){
-        // 从首页的消息通知跳转
-        await goPageFromOuter(record);
-      }else{
-        // 从消息页面列表点击详情查看 直接打开modal
-        openModalFun()
+  async function goPage(record, openModalFun?) {
+    if (!record.busType || record.busType === 'msg_node') {
+      if (openModalFun) {
+        openModalFun();
+      } else {
+        emit('detail', record);
       }
-      // 代码逻辑说明: QQYUN-4744【系统通知】6、系统通知@人后，对方看不到是哪个表单@的，没有超链接
-    }else if(record.busType == 'comment'){
-      // de
-      let msgAbstract = record.msgAbstract;
-      if(msgAbstract){
-        try {
-          let data = JSON.parse(msgAbstract.toString());
-          if(data.type == 'designForm'){
-            showDesignFormModal(data);
-          } else {
-            showOnlineCgformModal(data);
-          }
-        }catch (e) {
-          console.error('打开评论表单，但是msgAbstract参数不是JSON格式', msgAbstract)
-          if(openModalFun){
-            openModalFun();
-          }
-        }
-      }
-    }else if(record.busType == 'tenant_invite'){
-      if(props.isLowApp===true){
-        router.push({ name:"myapps-settings-user", query:{ page:'tenantSetting' }})
-      }else{
-        router.push({ name:"system-usersetting", query:{ page:'tenantSetting' }})
-      }
-    }else{
-      if(props && props.isLowApp===true){
-        openLowAppFlowModal(record)
-      }else{
-        await goPageWithBusType(record)
-      }
+      return;
     }
-/*    busId: "1562035005173587970"
-    busType: "email"
-    openPage: "modules/eoa/email/modals/EoaEmailInForm"
-    openType: "component"*/
+    if (record.busType === 'comment') {
+      openModalFun && openModalFun();
+      return;
+    }
+    if (record.busType === 'tenant_invite') {
+      await router.push({ name: 'system-usersetting', query: { page: 'tenantSetting' } });
+      return;
+    }
+    await goPageWithBusType(record);
   }
 
-  /**
-   * 打开表单设计器 表单弹窗
-   * @param data
-   */
-  function showDesignFormModal(data) {
-    handleOpenType('design', {
-      mode: 'detail',
-      desformCode: data.code,
-      dataId: data.dataId,
-      isOnline: false,
-    });
-  }
-
-  /**
-   * 打开Online表单 弹窗
-   * @param data
-   */
-  function showOnlineCgformModal(data) {
-    handleOpenType('cgform', {
-      formId: data.formId,
-      isUpdate: true,
-      disableSubmit: true,
-      record: {
-        id: data.dataId,
-      },
-    });
-  }
-
-  /**
-   * 判断是不是表单的评论消息
-   * @param record
-   */
   function isFormComment(record) {
-    if(record.busType == 'comment'){
-      let msgAbstract = record.msgAbstract;
-      if(msgAbstract){
-        try {
-          let data = JSON.parse(msgAbstract);
-          if(['cgform', 'designForm'].includes(data.type)){
-            return true
-          }
-        }catch (e) {
-          console.error('打开评论表单，但是msgAbstract参数不是JSON格式', msgAbstract)
-        }
-      }
-    }
-    return false
+    return false;
   }
 
-  /**
-   * 如果是工作流任务 在lowApp中 直接打开modal
-   */
-  function openLowAppFlowModal(record){
+  async function goPageWithBusType(record) {
     const { busType, busId, msgAbstract } = record;
-    let temp = messageHrefArray.filter(item=>item.value === busType);
-    if(!temp || temp.length==0){
-      console.error('当前业务类型不识别', busType);
-      return;
-    }
-    if(busType.indexOf('bpm')<0){
-      console.error('low-app不支持跳转邮箱', busType);
-      return;
-    }
-    //固定参数 detailId 用于查询表单数据
-    let query:any = {
-      detailId: busId
-    };
-    // 额外参数处理
-    if(msgAbstract){
-      try {
-        let json = JSON.parse(msgAbstract);
-        Object.keys(json).map(k=>{
-          query[k] = json[k]
-        });
-      }catch (e) {
-        console.error('msgAbstract参数不是JSON格式', msgAbstract)
-      }
-    }
-    console.log("busType = ", busType)
-    handleOpenType('task', {
-      record: {
-        id: busId,
-        procInsId: query.procInsId,
-        processDefinitionId: query.processDefinitionId,
-        isDetail: query.taskDetail || 'bpm_cc' == busType
-      }
-    })
-  }
-
-  /**
-   * 根据busType不同跳转不同页面
-   * @param record
-   */
-  async function goPageWithBusType(record){
-    const { busType, busId, msgAbstract } = record;
-    let temp = messageHrefArray.filter(item=>item.value === busType);
-    if(!temp || temp.length==0){
+    const temp = messageHrefArray.filter((item) => item.value === busType);
+    if (!temp || temp.length === 0) {
       console.error('当前业务类型不识别', busType);
       return;
     }
@@ -467,70 +298,51 @@ export function useMessageHref(emit, props){
         path = temp[0].text;
       }
     }
-    path = path.replace('{DETAIL_ID}', busId)
-    //固定参数 detailId 用于查询表单数据
-    let query:any = {
-      detailId: busId
-    };
-    // 额外参数处理
-    if(msgAbstract){
+    path = path.replace('{DETAIL_ID}', busId);
+    const query: any = { detailId: busId };
+    if (msgAbstract) {
       try {
-        let json = JSON.parse(msgAbstract);
-        Object.keys(json).map(k=>{
-          query[k] = json[k]
+        const json = JSON.parse(msgAbstract);
+        Object.keys(json).forEach((key) => {
+          query[key] = json[key];
         });
-      }catch (e) {
-        console.error('msgAbstract参数不是JSON格式', msgAbstract)
+      } catch (e) {
+        console.error('msgAbstract参数不是JSON格式', msgAbstract);
       }
     }
-    if(query.taskDetail){
-      // 查看任务详情的弹窗
-      await showHistory(query.procInsId, {taskOriginalId:query.taskId,busType,id:busId,readFlag:record.readFlag})
-    }else{
-      // 跳转路由
+    if (query.taskDetail) {
+      await showHistory(query.procInsId, { taskOriginalId: query.taskId, busType, id: busId, readFlag: record.readFlag });
+    } else {
       appStore.setMessageHrefParams(query);
-      if(rt.path.indexOf(path)>=0){
+      if (rt.path.indexOf(path) >= 0) {
         await closeTab();
-        await router.replace({ path: path, query:{ time: new Date().getTime() } });
-      }else{
-        closeSameRoute(path)
-        await router.push({ path: path });
+        await router.replace({ path, query: { time: new Date().getTime() } });
+      } else {
+        closeSameRoute(path);
+        await router.push({ path });
       }
     }
   }
 
-  /**
-   * 从首页的消息通知跳转消息列表打开modal
-   * @param record
-   */
-  async function goPageFromOuter(record){
-    //没有定义业务类型 直接跳转我的消息页面
-    emit('detail', record)
-  }
-
-  //===============================================================================================================
-  // 代码逻辑说明: QQYUN-3485 【查看流程】做一个查看页面，非办理页面，只通过流程实例参数即可
   async function showHistory(processInstanceId, data?) {
-    let { formData, formUrl } = await getTaskInfoForHistory({ processInstanceId });
+    const { formData, formUrl } = await getTaskInfoForHistory({ processInstanceId });
     formData['PROCESS_TAB_TYPE'] = 'history';
     handleOpenType('history', {
       formData,
       formUrl,
-      isCc: data && data.busType == 'bpm_cc',
+      isCc: data && data.busType === 'bpm_cc',
       record: data,
       title: '流程历史',
     });
   }
 
-  const nodeInfoUrl = '/act/process/extActProcessNode/getHisProcessNodeInfo'
+  const nodeInfoUrl = '/act/process/extActProcessNode/getHisProcessNodeInfo';
   const taskNodeInfo = (params) => defHttp.get({ url: nodeInfoUrl, params });
 
   async function getTaskInfoForHistory(record) {
-    //查询条件
-    let params = { procInstId: record.processInstanceId };
+    const params = { procInstId: record.processInstanceId };
     const result = await taskNodeInfo(params);
-    console.log('获取历史任务信息', result);
-    let formData: any = {
+    const formData: any = {
       dataId: result.dataId,
       taskId: record.id,
       taskDefKey: record.taskId,
@@ -539,11 +351,8 @@ export function useMessageHref(emit, props){
       vars: result.records,
     };
     let tempFormUrl = result.formUrl;
-    console.log('获取流程节点表单URL', tempFormUrl);
-    //节点配置表单URL，VUE组件类型对应的拓展参数
-    if (tempFormUrl && tempFormUrl.indexOf('?') != -1 && !isURL(tempFormUrl) && tempFormUrl.indexOf('{{DOMAIN_URL}}') == -1) {
+    if (tempFormUrl && tempFormUrl.indexOf('?') !== -1 && !isURL(tempFormUrl) && tempFormUrl.indexOf('{{DOMAIN_URL}}') === -1) {
       tempFormUrl = result.formUrl.split('?')[0];
-      console.log('获取流程节点表单URL（去掉参数）', tempFormUrl);
       formData.extendUrlParams = getQueryVariable(result.formUrl);
     }
     return {
@@ -552,34 +361,22 @@ export function useMessageHref(emit, props){
     };
   }
 
-  /**
-   * 获取URL上参数
-   * @param url
-   */
   function getQueryVariable(url) {
     if (!url) return;
-
-    let t,
-      n,
-      r,
-      i = url.split('?')[1],
-      s = {};
-    (t = i.split('&')), (r = null), (n = null);
-    for (let o in t) {
-      let u = t[o].indexOf('=');
-      u !== -1 && ((r = t[o].substr(0, u)), (n = t[o].substr(u + 1)), (s[r] = n));
-    }
-    return s;
+    const query = url.split('?')[1];
+    const result = {};
+    query.split('&').forEach((item) => {
+      const index = item.indexOf('=');
+      if (index !== -1) {
+        result[item.substr(0, index)] = item.substr(index + 1);
+      }
+    });
+    return result;
   }
 
-  /**
-   * URL地址
-   * @param {*} s
-   */
   function isURL(s) {
     return /^http[s]?:\/\/.*/.test(s);
   }
-  //===============================================================================================================
 
   return {
     goPage,
@@ -587,5 +384,5 @@ export function useMessageHref(emit, props){
     modalRegCache,
     currentModal,
     bindParams,
-  }
+  };
 }

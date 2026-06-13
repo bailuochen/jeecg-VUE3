@@ -132,7 +132,6 @@ export type ComponentType =
   | 'JSelectMultiple'
   | 'JSelectSingle'
   | 'JPopup'
-  | 'JPopupDict'
   | 'JSwitch'
   | 'JEasyCron'
   | 'JTreeDict'
@@ -149,11 +148,6 @@ export type ComponentType =
   | 'JSearchSelect'
   | 'JAddInput'
   | 'Time'
-  | 'OnlineSelectCascade'
-  | 'LinkTableCard'
-  | 'LinkTableSelect'
-  | 'LinkTableForQuery'
-  | 'CascaderPcaForQuery'
   | 'CascaderPcaInFilter'
   | 'UserSelect'
   | 'RoleSelect'
@@ -162,6 +156,4 @@ export type ComponentType =
   | 'linkRecordSelect'
   | 'RangeTime'
   | 'JRangeNumber'
-  | 'JLinkTableCard'
   | 'JInputSelect';
-

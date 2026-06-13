@@ -15,9 +15,6 @@ enum Api {
   queryRolePermission = '/sys/permission/queryRolePermission',
   saveRolePermission = '/sys/permission/saveRolePermission',
   queryDataRule = '/sys/role/datarule',
-  getParentDesignList = '/act/process/extActDesignFlowData/getDesFormFlows',
-  getRoleDegisnList = '/joa/designform/designFormCommuse/getRoleDegisnList',
-  saveRoleDesign = '/joa/designform/designFormCommuse/sysRoleDesignAdd',
   userList = '/sys/user/userRoleList',
   deleteUserRole = '/sys/user/deleteUserRole',
   batchDeleteUserRole = '/sys/user/deleteUserRoleBatch',
@@ -120,20 +117,6 @@ export const queryDataRule = (params) =>
  * 保存角色数据规则
  */
 export const saveDataRule = (params) => defHttp.post({ url: Api.queryDataRule, params });
-/**
- * 获取表单数据
- * @return List<Map>
- */
-export const getParentDesignList = () => defHttp.get({ url: Api.getParentDesignList });
-/**
- * 获取角色表单数据
- * @return List<Map>
- */
-export const getRoleDegisnList = (params) => defHttp.get({ url: Api.getRoleDegisnList, params });
-/**
- * 提交角色工单信息
- */
-export const saveRoleDesign = (params) => defHttp.post({ url: Api.saveRoleDesign, params });
 /**
  * 角色列表接口
  * @param params

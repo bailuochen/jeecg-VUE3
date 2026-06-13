@@ -23,9 +23,6 @@ import { checkIsQiankunMicro } from "/@/qiankun/micro";
 import { autoUseQiankunMicro } from "/@/qiankun/micro/qiankunMicro";
 import { useAppStoreWithOut } from "@/store/modules/app";
 
-// 注册online模块lib
-import { registerPackages } from '/@/utils/monorepo/registerPackages';
-
 // 程序入口
 async function main() {
   if (checkIsQiankunMicro()) {
@@ -62,9 +59,6 @@ async function bootstrap(props?: MainAppProps) {
 
   // 初始化内部系统配置
   initAppConfigStore();
-
-  // 注册外部模块路由(注册online模块lib)
-  registerPackages(app);
 
   // 注册全局组件
   registerGlobComp(app);
