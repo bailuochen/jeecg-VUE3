@@ -13,7 +13,7 @@ function getContainer(props?: any) {
 
 function render(props?: any) {
   const isQiankun = qiankunWindow.__POWERED_BY_QIANKUN__;
-  router = createSubRouter(isQiankun ? '/vue-admin' : '/');
+  router = createSubRouter(isQiankun ? '/vue-admin' : import.meta.env.BASE_URL || '/');
   app = createApp(App, {
     mainAppData: props?.data || {},
     isQiankun,

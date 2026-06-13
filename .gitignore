@@ -13,6 +13,7 @@ rebel.xml
 jeecgboot-vue3/dist
 jeecg-app-1/dist
 vue-admin/dist
+deploy/local-server/
 **/*.lock
 os_del.cmd
 os_del_doc.cmd

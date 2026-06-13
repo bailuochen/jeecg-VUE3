@@ -4,8 +4,8 @@ import qiankun from 'vite-plugin-qiankun';
 
 const appName = 'vue-admin';
 
-export default defineConfig({
-  base: '/',
+export default defineConfig(({ command }) => ({
+  base: command === 'build' ? `/micro-apps/${appName}/` : '/',
   plugins: [
     vue(),
     qiankun(appName, {
@@ -20,4 +20,4 @@ export default defineConfig({
       'Access-Control-Allow-Origin': '*',
     },
   },
-});
+}));

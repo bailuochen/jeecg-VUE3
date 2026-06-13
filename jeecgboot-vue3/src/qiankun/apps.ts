@@ -4,7 +4,7 @@ const _apps: Recordable[] = [];
 
 for (const key in import.meta.env) {
   if (key.includes('VITE_APP_SUB_')) {
-    const name = key.split('VITE_APP_SUB_')[1];
+    const name = key.split('VITE_APP_SUB_')[1].toLowerCase().replace(/_/g, '-');
     _apps.push({
       name,
       entry: import.meta.env[key],

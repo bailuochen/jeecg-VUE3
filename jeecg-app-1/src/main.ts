@@ -13,7 +13,7 @@ function getContainer(props?: any) {
 
 function render(props?: any) {
   const isQiankun = qiankunWindow.__POWERED_BY_QIANKUN__;
-  router = createSubRouter(isQiankun ? '/jeecg-app-1' : '/');
+  router = createSubRouter(isQiankun ? '/jeecg-app-1' : import.meta.env.BASE_URL || '/');
   app = createApp(App, {
     mainAppData: props?.data || {},
     isQiankun,

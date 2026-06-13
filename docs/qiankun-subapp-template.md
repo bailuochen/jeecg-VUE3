@@ -20,12 +20,12 @@
 | package name | `jeecg-app-2` |
 | qiankun appName | `jeecg-app-2` |
 | 主应用路由前缀 | `/jeecg-app-2` |
-| 主应用 env 变量 | `VITE_APP_SUB_jeecg-app-2` |
+| 主应用 env 变量 | `VITE_APP_SUB_jeecg_app_2` |
 | 子应用开发端口 | `3102` |
 
 推荐端口规则：`jeecg-app-1` 用 `3101`，`jeecg-app-2` 用 `3102`，后续依次递增。
 
-最重要的规则：只要子应用叫 `jeecg-app-2`，主应用路由前缀就必须是 `/jeecg-app-2`，主应用环境变量就必须是 `VITE_APP_SUB_jeecg-app-2`。
+最重要的规则：只要子应用叫 `jeecg-app-2`，主应用路由前缀就必须是 `/jeecg-app-2`。主应用环境变量使用下划线安全写法 `VITE_APP_SUB_jeecg_app_2`，代码会自动把下划线还原为子应用名里的连字符。
 
 ## 2. 复制子应用模板
 
@@ -181,12 +181,12 @@ jeecgboot-vue3/.env.development
 增加一行：
 
 ```env
-VITE_APP_SUB_jeecg-app-2=//127.0.0.1:3102
+VITE_APP_SUB_jeecg_app_2=//127.0.0.1:3102
 ```
 
 注意：
 
-- `VITE_APP_SUB_` 后面的名字必须等于子应用 `appName`。
+- `VITE_APP_SUB_` 后面的名字使用下划线写法，例如 `jeecg_app_2`，运行时会转换成 `jeecg-app-2`。
 - 每个 env 变量必须单独一行，不要写到注释后面。
 - 修改 `.env.development` 后需要重启主应用前端。
 

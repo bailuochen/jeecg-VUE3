@@ -57,6 +57,13 @@ function getConfFiles() {
     return ['.env', '.env.prod_electron'];
   }
 
+  // Local deployment simulation can build as NODE_ENV=production while
+  // generating runtime config from a dedicated env file.
+  const configEnv = process.env.VITE_CONFIG_ENV;
+  if (configEnv) {
+    return ['.env', `.env.${configEnv}`];
+  }
+
   const script = process.env.npm_lifecycle_script;
   // 代码逻辑说明: 【QQYUN-8690】修正获取当前环境下的文件名
   const reg = new RegExp('NODE_ENV=([a-z_\\d]+)');
