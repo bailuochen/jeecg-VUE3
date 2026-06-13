@@ -45,7 +45,7 @@
   import { useMessage } from '/@/hooks/web/useMessage';
 
   import { useUserStore } from '/@/store/modules/user';
-  import { useLoginState, useFormRules, useFormValid } from './useLogin';
+  import { LoginStateEnum, useLoginState, useFormRules, useFormValid } from './useLogin';
   import { getCodeInfo } from '/@/api/sys/user';
   import {  encryptAESCBC } from '/@/utils/cipher';
 

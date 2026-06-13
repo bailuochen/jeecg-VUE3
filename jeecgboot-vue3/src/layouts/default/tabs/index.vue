@@ -139,7 +139,6 @@
         getShowQuick,
         getShowRedo,
         getShowFold,
-        getIsSimpleTheme,
       };
     },
   });

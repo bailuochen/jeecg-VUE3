@@ -15,6 +15,15 @@ const dashboard: AppRouteModule = {
   },
   children: [
     {
+      path: 'analysis',
+      name: 'AnalysisRedirect',
+      redirect: PageEnum.BASE_HOME,
+      meta: {
+        hideMenu: true,
+        title: t('routes.dashboard.workbench'),
+      },
+    },
+    {
       path: 'workbench',
       name: 'Workbench',
       component: () => import('/@/views/dashboard/workbench/index.vue'),

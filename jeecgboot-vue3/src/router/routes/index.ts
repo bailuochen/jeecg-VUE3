@@ -29,12 +29,21 @@ export const RootRoute: AppRouteRecordRaw = {
   },
 };
 
+export const LegacyAnalysisRedirectRoute: AppRouteRecordRaw = {
+  path: '/dashboard/analysis',
+  name: 'LegacyAnalysisRedirect',
+  redirect: PageEnum.BASE_HOME,
+  meta: {
+    hideMenu: true,
+    title: 'Workbench',
+  },
+};
+
 export const LoginRoute: AppRouteRecordRaw = {
   path: '/login',
   name: 'Login',
   //新版后台登录，如果想要使用旧版登录放开即可
-  // component: () => import('/@/views/sys/login/Login.vue'),
-  component: () => import('/@/views/system/loginmini/MiniLogin.vue'),
+  component: () => import('/@/views/sys/login/Login.vue'),
   meta: {
     title: t('routes.basic.login'),
   },
@@ -65,4 +74,4 @@ export const TokenLoginRoute: AppRouteRecordRaw = {
   },
 };
 // Basic routing without permission
-export const basicRoutes = [LoginRoute, RootRoute, ...mainOutRoutes, REDIRECT_ROUTE, PAGE_NOT_FOUND_ROUTE, TokenLoginRoute, Oauth2LoginRoute];
+export const basicRoutes = [LoginRoute, RootRoute, LegacyAnalysisRedirectRoute, ...mainOutRoutes, REDIRECT_ROUTE, PAGE_NOT_FOUND_ROUTE, TokenLoginRoute, Oauth2LoginRoute];
